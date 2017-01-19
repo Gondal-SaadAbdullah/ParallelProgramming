@@ -12,7 +12,7 @@ namespace GaussiaonEliminationSequential
 		{
 			double[,] A = new double[,]
 			{
-				{5,6,8,5},
+				{0,6,8,5},
 				{3,-6,1,7},
 				{4,9,7,10}
 			};
@@ -20,14 +20,30 @@ namespace GaussiaonEliminationSequential
 			//Write logic to deal with frow interchanging logic if the concerned pivot is already zero
 
 			int N = 3;
+			int nextNonzeroRowAtDiagonal;
 			double multiplicationFactor;
 			double divisionFactor;
+			int sizeOfDouble = sizeof(double);
+			double[] tempRowToBeReplaced = new double[N + 1];
 
 			for (int diagonal = 0; diagonal < N - 1; diagonal++)
 			{
+
+				//do something about it - which is to switch the row with immediate next row,
+				//having non zero value in the position of the diagonal
 				if (A[diagonal, diagonal] == 0)
-					continue;
-					//do something about it
+				{
+					for (nextNonzeroRowAtDiagonal = diagonal + 1; nextNonzeroRowAtDiagonal < N && A[nextNonzeroRowAtDiagonal, diagonal] == 0; nextNonzeroRowAtDiagonal++);
+
+					//copying diagonal row to a temp array
+					Buffer.BlockCopy(A, sizeOfDouble * (N + 1) * (diagonal), tempRowToBeReplaced, 0, (N + 1) * sizeOfDouble);
+
+					//copying first non-zero row to diagonal row
+					Buffer.BlockCopy(A, sizeOfDouble * (N + 1) * (nextNonzeroRowAtDiagonal), A, sizeOfDouble * (N + 1) * (diagonal), sizeOfDouble * (N + 1));
+
+					//copying temp array to first non-zero row
+					Buffer.BlockCopy(tempRowToBeReplaced, 0, A, sizeOfDouble * (N + 1) * (nextNonzeroRowAtDiagonal), sizeOfDouble * (N + 1));
+				}
 
 				divisionFactor = A[diagonal, diagonal];
 
@@ -35,6 +51,9 @@ namespace GaussiaonEliminationSequential
 				{
 					multiplicationFactor = A[i, diagonal];
 
+					//Means no elimination operation is required for the current row,
+					//because the column under the diagonal for this zero is already zero,
+					//so just move to the new row
 					if (multiplicationFactor == 0)
 						continue;
 
@@ -49,7 +68,8 @@ namespace GaussiaonEliminationSequential
 
 					for (int j = diagonal; j < N + 1; j++)
 					{
-						if (i == diagonal + 1)
+						// the pivot is already 1 so, there is not point dividing the complete row with 1.
+						if (i == diagonal + 1 && divisionFactor != 1) 
 							A[diagonal, j] = A[diagonal, j] / divisionFactor;
 
 						A[i, j] = A[i, j] + (A[diagonal, j] * multiplicationFactor);
