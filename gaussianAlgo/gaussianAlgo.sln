@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gaussianAlgo", "gaussianAlgo\gaussianAlgo.csproj", "{4E63D9EB-7B2F-42B9-9DDA-ACC6955CBBFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E63D9EB-7B2F-42B9-9DDA-ACC6955CBBFC}.Debug|x86.ActiveCfg = Debug|x86
+		{4E63D9EB-7B2F-42B9-9DDA-ACC6955CBBFC}.Debug|x86.Build.0 = Debug|x86
+		{4E63D9EB-7B2F-42B9-9DDA-ACC6955CBBFC}.Release|x86.ActiveCfg = Release|x86
+		{4E63D9EB-7B2F-42B9-9DDA-ACC6955CBBFC}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal
