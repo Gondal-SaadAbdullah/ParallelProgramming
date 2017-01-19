@@ -17,7 +17,7 @@ namespace GaussiaonEliminationSequential
 				{4,9,7,10}
 			};
 
-			//Write logic to deal with frow interchanging logic if the concerned pivot is already zero
+			//Write logic to deal with row interchanging logic if the concerned pivot is already zero
 
 			int N = 3;
 			int nextNonzeroRowAtDiagonal;
@@ -58,7 +58,6 @@ namespace GaussiaonEliminationSequential
 						continue;
 
 					if (multiplicationFactor > 0)
-
 						multiplicationFactor *= -1;
 
 					else
@@ -79,7 +78,6 @@ namespace GaussiaonEliminationSequential
 						for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
 				}
 			}
-
 			Console.WriteLine();
 		}
 	}
