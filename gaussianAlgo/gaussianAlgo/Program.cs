@@ -23,6 +23,7 @@ namespace GaussiaonEliminationSequential
 			double multiplicationFactor;
 			int sizeOfDouble = sizeof(double);
 			double[] tempRowToBeReplaced = new double[N + 1];
+			double[] result = new double[N];
 
 			for (int diagonal = 0; diagonal < N - 1; diagonal++)
 			{
@@ -70,6 +71,27 @@ namespace GaussiaonEliminationSequential
 						for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
 				}
 			}
+
+			result[N - 1] = A[N - 1, N] / A[N - 1, N - 1];
+
+			int columns = N;
+			N = N - 2;
+			double temp;
+
+			for (int diagonal = N; diagonal > -1; diagonal--)
+			{
+				temp = 0;
+
+				for (int j = N + 1; j > diagonal; j--)
+					temp += A[diagonal, j] * result[j];
+
+				result[diagonal] = (temp * -1) + A[diagonal, columns];
+
+				result[diagonal] /= A[diagonal, diagonal];
+			}
+
+			for (int i = 0; i < columns; i++)
+				Console.WriteLine(result[i]);
 		}
 	}
 }
