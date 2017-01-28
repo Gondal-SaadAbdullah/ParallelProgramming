@@ -20,7 +20,6 @@ namespace GaussiaonEliminationSequential
 
 			int N = 3;
 			int nextNonzeroRowAtDiagonal;
-			double multiplicationFactor;
 			int sizeOfDouble = sizeof(double);
 			double[] tempRowToBeReplaced = new double[N + 1];
 			double[] result = new double[N];
@@ -47,19 +46,6 @@ namespace GaussiaonEliminationSequential
 					Buffer.BlockCopy(tempRowToBeReplaced, 0, A, sizeOfDouble * (N + 1) * (nextNonzeroRowAtDiagonal), sizeOfDouble * (N + 1));
 				}
 
-				multiplicationFactor = A[diagonal, diagonal];
-
-				Console.WriteLine("Division Factor : {0}", multiplicationFactor);
-
-				if (multiplicationFactor != 1)
-					Parallel.For(diagonal, N + 1, (int index) =>
-					{
-						A[diagonal, index] = A[diagonal, index] / multiplicationFactor;
-					});
-
-				/*for (int j = diagonal; j < N + 1; j++)
-					A[diagonal, j] = A[diagonal, j] / multiplicationFactor;*/
-
 				task = new Task[N - 1 - diagonal];
 
 				for (int i = diagonal + 1, j = 0; i < N; i++, j++)
@@ -84,13 +70,10 @@ namespace GaussiaonEliminationSequential
 
 						Console.WriteLine("Multiplication Factor : {0}", localMultiplicationFactor);
 
-						//for (int j = diagonal; j < N + 1; j++)
-						//	A[i, j] = A[i, j] + (A[diagonal, j] * multiplicationFactor);
-
 						Parallel.For(diagonal, N + 1, (int index) =>
 						{
 							Console.WriteLine("row {0}, index {1}", row, index);
-							A[row, index] = A[row, index] + (A[diagonal, index] * localMultiplicationFactor);
+							A[row, index] = A[row, index] + (A[diagonal, index] * localMultiplicationFactor / A[diagonal, diagonal]);
 						});
 					}, i);
 
@@ -98,35 +81,6 @@ namespace GaussiaonEliminationSequential
 				}
 
 				Task.WaitAll(task);
-
-				/*for (int i = diagonal + 1; i < N; i++)
-				{
-					multiplicationFactor = A[i, diagonal];
-
-					//Means no elimination operation is required for the current row,
-					//because the column under the diagonal for this zero is already zero,
-					//so just move to the new row
-					if (multiplicationFactor == 0)
-						continue;
-
-					if (multiplicationFactor > 0)
-						multiplicationFactor *= -1;
-					else
-						multiplicationFactor = Math.Abs(multiplicationFactor);
-
-					Console.WriteLine("Multiplication Factor : {0}", multiplicationFactor);
-
-					//for (int j = diagonal; j < N + 1; j++)
-					//	A[i, j] = A[i, j] + (A[diagonal, j] * multiplicationFactor);
-
-					Parallel.For(diagonal, N + 1, (int index) =>
-					{
-						A[i, index] = A[i, index] + (A[diagonal, index] * multiplicationFactor);
-					});
-
-					for (int ii = 0; ii < N; Console.WriteLine(), ii++)
-						for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
-				}*/
 
 				for (int ii = 0; ii < N; Console.WriteLine(), ii++)
 					for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
@@ -138,6 +92,7 @@ namespace GaussiaonEliminationSequential
 
 			result[N - 1] = A[N - 1, N] / A[N - 1, N - 1];
 
+			int columns = N;
 			N = N - 2;
 			double temp;
 
@@ -146,9 +101,11 @@ namespace GaussiaonEliminationSequential
 				temp = 0;
 
 				for (int j = N + 1; j > diagonal; j--)
-					temp += A[diagonal, j] * result[diagonal + 1];
+					temp += A[diagonal, j] * result[j];
 
-				result[diagonal] += result[diagonal] + (temp * -1);
+				result[diagonal] = (temp * -1) + A[diagonal, columns];
+
+				result[diagonal] /= A[diagonal, diagonal];
 			}
 
 			for (int i = 0; i < 3; i++)
