@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace GaussiaonEliminationSequential
 {
@@ -11,19 +12,34 @@ namespace GaussiaonEliminationSequential
 	{
 		static void Main(string[] args)
 		{
-			double[,] A = new double[,]
-			{
-				{5,6,8,5},
-				{3,-6,1,7},
-				{4,9,7,10}
-			};
+			Random num = new Random();
+			int rows = 1000, col = 1001;
+			double[,] A = new double[rows, col];
+			//{
+			//	{5,6,8,5},
+			//	{3,-6,1,7},
+			//	{4,9,7,10}
+			//};
 
-			int N = 3;
+			for (int i = 0; i < rows; i++)
+			{
+				for (int j = 0; j < col; j++)
+				{
+					A[i, j] = num.Next(0, 999);
+					//Console.Write(A[i,j] + ", ");
+				}
+				//Console.WriteLine();
+			}
+			Console.WriteLine(A[0,rows]);
+
+			//Write logic to deal with row interchanging logic if the concerned pivot is already zero
+			int N = rows;
 			int nextNonzeroRowAtDiagonal;
 			int sizeOfDouble = sizeof(double);
 			double[] tempRowToBeReplaced = new double[N + 1];
 			double[] result = new double[N];
 			Task[] task;
+			Stopwatch watch = Stopwatch.StartNew();
 
 			for (int diagonal = 0; diagonal < N - 1; diagonal++)
 			{
@@ -32,7 +48,7 @@ namespace GaussiaonEliminationSequential
 				//having non zero value in the position of the diagonal
 				if (A[diagonal, diagonal] == 0)
 				{
-					Console.WriteLine("Switching rows");
+					//Console.WriteLine("Switching rows");
 					
 					for (nextNonzeroRowAtDiagonal = diagonal + 1; nextNonzeroRowAtDiagonal < N && A[nextNonzeroRowAtDiagonal, diagonal] == 0; nextNonzeroRowAtDiagonal++) ;
 
@@ -53,7 +69,7 @@ namespace GaussiaonEliminationSequential
 					task[j] = new Task((rowObject) => {
 						int row = (int)rowObject;
 
-						Console.WriteLine("i I received {0}", row);
+						//Console.WriteLine("i I received {0}", row);
 
 						double localMultiplicationFactor = A[row, diagonal];
 
@@ -68,11 +84,11 @@ namespace GaussiaonEliminationSequential
 						else
 							localMultiplicationFactor = Math.Abs(localMultiplicationFactor);
 
-						Console.WriteLine("Multiplication Factor : {0}", localMultiplicationFactor);
+						//Console.WriteLine("Multiplication Factor : {0}", localMultiplicationFactor);
 
 						Parallel.For(diagonal, N + 1, (int index) =>
 						{
-							Console.WriteLine("row {0}, index {1}", row, index);
+							//Console.WriteLine("row {0}, index {1}", row, index);
 							A[row, index] = A[row, index] + (A[diagonal, index] * localMultiplicationFactor / A[diagonal, diagonal]);
 						});
 					}, i);
@@ -82,13 +98,18 @@ namespace GaussiaonEliminationSequential
 
 				Task.WaitAll(task);
 
-				for (int ii = 0; ii < N; Console.WriteLine(), ii++)
-					for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
+				//for (int ii = 0; ii < N; Console.WriteLine(), ii++)
+				//	for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
 			}
 
-			Console.WriteLine();
+			//Console.WriteLine();
+			watch.Stop();
+			Console.WriteLine("time >>>>> " + watch.ElapsedMilliseconds);
+			Console.WriteLine("time ticks >>>>> " + watch.ElapsedTicks);
+			watch.Reset();
+			watch.Start();
 
-			Console.WriteLine("Substitution, final results");
+			//Console.WriteLine("Substitution, final results");
 
 			result[N - 1] = A[N - 1, N] / A[N - 1, N - 1];
 
@@ -110,6 +131,21 @@ namespace GaussiaonEliminationSequential
 
 			for (int i = 0; i < 3; i++)
 				Console.WriteLine(result[i]);
+
+			//validating values of variables
+			double finalResult = 0;
+			N = rows;
+			for (col = 0; col < N; col++)
+			{
+				finalResult += A[0, col] * result[col];
+			}
+			Console.WriteLine("Final Result >>>>> " + finalResult);
+
+			watch.Stop();
+			Console.WriteLine("eq time >>>> " + watch.ElapsedMilliseconds);
+			Console.WriteLine("eq time ticks >>>> " + watch.ElapsedTicks);
+
+			Console.ReadLine();
 		}
 	}
 }
