@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace GaussiaonEliminationSequential
 {
@@ -10,20 +11,33 @@ namespace GaussiaonEliminationSequential
 	{
 		static void Main(string[] args)
 		{
-			double[,] A = new double[,]
+			Random num = new Random();
+			int row = 1000, col = 1001;
+			double[,] A = new double[row,col];
+			//{
+			//	{5,6,8,5},
+			//	{3,-6,1,7},
+			//	{4,9,7,10}
+			//};
+
+			for (int i = 0; i < row; i++)
 			{
-				{5,6,8,5},
-				{3,-6,1,7},
-				{4,9,7,10}
-			};
+				for (int j = 0; j < col; j++)
+				{
+					A[i, j] = num.Next(0,999);
+				}
+			}
+
+			Console.WriteLine(A[0,row]);
 
 			//Write logic to deal with row interchanging logic if the concerned pivot is already zero
-			int N = 3;
+			int N = row;
 			int nextNonzeroRowAtDiagonal;
 			double multiplicationFactor;
 			int sizeOfDouble = sizeof(double);
 			double[] tempRowToBeReplaced = new double[N + 1];
 			double[] result = new double[N];
+			Stopwatch watch = Stopwatch.StartNew();
 
 			for (int diagonal = 0; diagonal < N - 1; diagonal++)
 			{
@@ -60,17 +74,23 @@ namespace GaussiaonEliminationSequential
 					else
 						multiplicationFactor = Math.Abs(multiplicationFactor);
 
-					Console.WriteLine("Multiplication Factor : {0}", multiplicationFactor);
+					//Console.WriteLine("Multiplication Factor : {0}", multiplicationFactor);
 
 					for (int j = diagonal; j < N + 1; j++)
 					{
 						A[i, j] = A[i, j] + (A[diagonal, j] * multiplicationFactor / A[diagonal, diagonal]);
 					}
 
-					for (int ii = 0; ii < N; Console.WriteLine(), ii++)
-						for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
+					//for (int ii = 0; ii < N; Console.WriteLine(), ii++)
+					//	for (int j = 0; j < N + 1; Console.Write("{0}+++", A[ii, j]), j++) ;
 				}
 			}
+
+			watch.Stop();
+			Console.WriteLine("time >>>>> " + watch.ElapsedMilliseconds);
+			Console.WriteLine("time ticks >>>>> " + watch.ElapsedTicks);
+			watch.Reset();
+			watch.Start();
 
 			result[N - 1] = A[N - 1, N] / A[N - 1, N - 1];
 
@@ -90,8 +110,25 @@ namespace GaussiaonEliminationSequential
 				result[diagonal] /= A[diagonal, diagonal];
 			}
 
-			for (int i = 0; i < columns; i++)
-				Console.WriteLine(result[i]);
+			//for (int i = 0; i < columns; i++)
+			//	Console.WriteLine(result[i]);
+
+			//validating values of variables
+			double finalResult = 0;
+			N = row;
+			for (col = 0; col < N; col++)
+			{
+				finalResult += A[0, col] * result[col];
+			}
+			Console.WriteLine("Final Result >>>>> " + finalResult);
+
+
+			watch.Stop();
+			Console.WriteLine("eq time >>>> " + watch.ElapsedMilliseconds);
+			Console.WriteLine("eq time ticks >>>> " + watch.ElapsedTicks);
+
+			Console.ReadLine();
+
 		}
 	}
 }
